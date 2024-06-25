@@ -1,4 +1,6 @@
-const express = require('express')
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express()
 const port = process.env.PORT || 3000;
 
@@ -6,8 +8,9 @@ const connectDB = require('./db/conexao');
 const { ObjectId } = require('mongodb');
 const noteModel = require('./model/Note');
 
-
-app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 let dbCollection;
 
@@ -19,6 +22,7 @@ async function startServer(){
 
     // getAll
     app.get('/api/notes', async (req, res) => {
+      //res.setHeader('Access-Control-Allow-Origin', '*');
       try {
         const result = await dbCollection.find({}).toArray();
         res.json(result);
@@ -30,8 +34,9 @@ async function startServer(){
 
     // get
     app.get('/api/notes/:id', async (req, res) => {
+      //res.setHeader('Access-Control-Allow-Origin', '*');
       try {
-        const result = await dbCollection.find({ _id: new ObjectId(req.params.id) }).toArray();
+        const result = await dbCollection.findOne({ _id: new ObjectId(req.params.id) });
         res.json(result);
       } catch (err) {
         console.error(err.message);
@@ -42,6 +47,8 @@ async function startServer(){
     
     // Add
     app.post('/api/notes', async (req, res) => {
+      //res.setHeader('Access-Control-Allow-Origin', '*');
+
       try {
         // Valida entradas
         if (req.body.titulo == null || req.body.conteudo == null) {
@@ -67,6 +74,7 @@ async function startServer(){
 
     // Remove
     app.delete('/api/notes/:id', async (req, res) => {
+      //res.setHeader('Access-Control-Allow-Origin', '*');
       try {
         const result = await dbCollection.deleteOne({ _id: new ObjectId(req.params.id) });
         
@@ -84,6 +92,7 @@ async function startServer(){
 
     // Edit
     app.put('/api/notes/:id', async (req, res) => {
+      //res.setHeader('Access-Control-Allow-Origin', '*');
       try {
 
         // Valida entradas
